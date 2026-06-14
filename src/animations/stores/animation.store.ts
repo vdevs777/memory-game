@@ -1,0 +1,27 @@
+import { create } from "zustand";
+import { CardEntryAnimationType } from "../config/animation.config";
+
+interface AnimationStore {
+  entryAnimationType: CardEntryAnimationType;
+  isAnimating: boolean;
+  shouldAnimate: boolean;
+  setShouldAnimate: (shouldAnimate: boolean) => void;
+  setEntryAnimationType: (type: CardEntryAnimationType) => void;
+  setIsAnimating: (isAnimating: boolean) => void;
+}
+
+export const useAnimationStore = create<AnimationStore>((set) => ({
+  entryAnimationType: "throw",
+  isAnimating: false,
+  shouldAnimate: false,
+
+  setShouldAnimate(shouldAnimate) {
+    set({ shouldAnimate });
+  },
+  setEntryAnimationType(entryAnimationType) {
+    set({ entryAnimationType });
+  },
+  setIsAnimating(isAnimating) {
+    set({ isAnimating });
+  },
+}));

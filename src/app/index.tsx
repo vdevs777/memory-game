@@ -1,9 +1,10 @@
-import { Text, View } from "react-native";
+import { useAuthStore } from "@/shared/stores/auth.store";
+import { Redirect } from "expo-router";
 
 export default function Index() {
-  return (
-    <View>
-      <Text>Index</Text>
-    </View>
-  );
+  const { user } = useAuthStore();
+
+  if (user) return <Redirect href={"/(private)/home"} />;
+
+  return <Redirect href={"/(public)/login"} />;
 }
