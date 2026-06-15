@@ -63,10 +63,12 @@ export function useGameCardVM({ card, index }: GameCardProps) {
   }, [card.isFlipped, shake]);
 
   useEffect(() => {
-    if (card.isMatched) playSuccess();
-
-    setTimeout(() => fadeOut(), 600);
-  }, [card.isMatched, playSuccess]);
+    if (card.isMatched) {
+      playSuccess();
+      const id = setTimeout(() => fadeOut(), 600);
+      return () => clearTimeout(id);
+    }
+  }, [card.isMatched, playSuccess, fadeOut]);
 
   useEffect(() => {
     if (status === "timeout" && !card.isMatched) {
