@@ -17,24 +17,25 @@ export function useGameCardVM({ card, index }: GameCardProps) {
 
   const { selectCard, status } = useGameStore();
 
-  const { animatedStyle: shakeCardAnimatedStyle, shake } =
-    useCardShakeAnimation();
-
   const {
     animatedStyle: cardSuccessAnimatedStyle,
     playSuccess,
     fadeOut,
+    reset: resetCardSuccessAnimation,
   } = useCardSuccessAnimation();
 
   const {
     animatedStyle: cardTimeoutAnimatedStyle,
     fall,
-    reset,
+    reset: resetTimeoutAnimation,
   } = useCardTimeoutAnimation();
 
-  const previousFlippedRef = useRef(card.isFlipped);
-
   const entry = useCardEntryAnimation({ cardIndex: index });
+
+  const { animatedStyle: shakeCardAnimatedStyle, shake } =
+    useCardShakeAnimation();
+
+  const previousFlippedRef = useRef(card.isFlipped);
 
   const frontAnimatedStyle = useAnimatedStyle(() => ({
     transform: [
@@ -75,7 +76,18 @@ export function useGameCardVM({ card, index }: GameCardProps) {
       const randomDelay = Math.random() * 200;
       fall(randomDelay);
     }
-  }, [status]);
+
+    if (status === "countdown") {
+      resetCardSuccessAnimation();
+      resetTimeoutAnimation();
+    }
+  }, [
+    status,
+    card.isMatched,
+    fall,
+    resetCardSuccessAnimation,
+    resetTimeoutAnimation,
+  ]);
 
   return {
     card,

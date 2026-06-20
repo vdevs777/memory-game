@@ -21,10 +21,15 @@ export function useCardSuccessAnimation() {
     scale.value = withTiming(0.8, { duration: 300 });
   }
 
+  function reset() {
+    scale.value = 1;
+    opacity.value = 1;
+  }
+
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],
     opacity: opacity.value,
   }));
 
-  return { animatedStyle, playSuccess, fadeOut };
+  return { animatedStyle, playSuccess, fadeOut, reset };
 }

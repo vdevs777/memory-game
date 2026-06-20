@@ -6,16 +6,27 @@ import { useGameVM } from "./useGame.vm";
 import { CountdownOverlay } from "./components/CountdownOverlay";
 import { CardGrid } from "./components/CardGrid";
 import { GameHeader } from "./components/GameHeader";
+import { DefeatModal } from "./components/DefeatModal";
+import { ExitConfirmationModal } from "./components/ExitConfirmationModal";
+import { VictoryModal } from "./components/VictoryModal";
 
 export function GameView({
   selectedTheme,
   visibleCountdown,
   handleCountdownComplete,
-  handleGoBack,
+  visibleTimeoutModal,
+  handleGoHome,
+  handleTryAgain,
+  handleCancelExit,
+  showExitModal,
+  handleConfirmExit,
+  handleOpenExitModal,
+  setShowVictoryModal,
+  showVictoryModal,
 }: ReturnType<typeof useGameVM>) {
   return (
     <SafeAreaView style={styles.container}>
-      <GameHeader handleGoBack={handleGoBack} />
+      <GameHeader handleGoBack={handleOpenExitModal} />
       <View style={styles.gameInfo}>
         <Typography style={styles.title}>{selectedTheme?.title}</Typography>
         <Typography style={styles.subtitle}>
@@ -27,6 +38,21 @@ export function GameView({
       <CountdownOverlay
         visibleCountdown={visibleCountdown}
         handleCountdownComplete={handleCountdownComplete}
+      />
+      <DefeatModal
+        visible={visibleTimeoutModal}
+        onGoHome={handleGoHome}
+        onTryAgain={handleTryAgain}
+      />
+      <ExitConfirmationModal
+        visible={showExitModal}
+        onCancel={handleCancelExit}
+        onConfirm={handleConfirmExit}
+      />
+      <VictoryModal
+        visible={showVictoryModal}
+        onGoHistory={handleConfirmExit}
+        onPlayAgain={handleTryAgain}
       />
     </SafeAreaView>
   );

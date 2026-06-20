@@ -1,6 +1,9 @@
 import { CardEntryAnimationType } from "@/animations/config/animation.config";
 import { useAnimationStore } from "@/animations/stores/animation.store";
-import { getEntryAnimationDuration } from "@/animations/utils/animation.utils";
+import {
+  getEntryAnimationDuration,
+  getFallAnimationDuration,
+} from "@/animations/utils/animation.utils";
 import { Difficulty } from "@/shared/interfaces/difficulty";
 import { useGameStore } from "@/shared/stores/game.store";
 import { challengeTheme, difficultyConfigs } from "@/shared/utils/challenge";
@@ -14,12 +17,23 @@ export function useGameVM() {
     difficulty: Difficulty;
   }>();
 
-  const { initGame, previewAllCards, hideAllCards, startGame, cards } =
-    useGameStore();
+  const {
+    initGame,
+    resetGame,
+    pauseGame,
+    previewAllCards,
+    hideAllCards,
+    startGame,
+    cards,
+    status,
+    clearGame,
+    resumeGame,
+  } = useGameStore();
   const { entryAnimationType, setShouldAnimate, setEntryAnimationType } =
     useAnimationStore();
 
   const [visibleCountdown, setVisibleCountdown] = useState(false);
+  const [visibleTimeoutModal, setVisibleTimeoutModal] = useState(false);
 
   const selectedTheme = challengeTheme.find((theme) => theme.id === themeId);
 
@@ -49,9 +63,65 @@ export function useGameVM() {
     startGame,
   ]);
 
-  function handleGoBack() {
-    router.back();
+  function handleTryAgain() {
+    setVisibleTimeoutModal(false);
+    setShouldAnimate(false);
+    setShowVictoryModal(false);
+    resetGame();
+
+    createSequence()
+      .wait(300)
+      .then(() => setVisibleCountdown(true))
+      .run();
   }
+
+  function handleExit() {
+    setVisibleTimeoutModal(false);
+
+    createSequence()
+      .wait(200)
+      .then(() => router.push("/(private)/home"))
+      .run();
+  }
+
+  function handleGoHome() {
+    clearGame();
+    router.replace("/(private)/home");
+  }
+
+  const [showExitModal, setShowExitModal] = useState(false);
+  const [showVictoryModal, setShowVictoryModal] = useState(false);
+
+  const handleOpenExitModal = useCallback(() => {
+    if (status === "playing") {
+      pauseGame();
+      setShowExitModal(true);
+    }
+  }, [pauseGame, status]);
+
+  const handleConfirmExit = useCallback(() => {
+    setShowExitModal(false);
+    resetGame();
+    router.replace("/(private)/home");
+  }, [resetGame]);
+
+  const handleCancelExit = useCallback(() => {
+    resumeGame();
+    setShowExitModal(false);
+  }, []);
+
+  useEffect(() => {
+    if (status === "finished") {
+      setShowVictoryModal(true);
+    }
+
+    if (status === "timeout") {
+      createSequence()
+        .wait(getFallAnimationDuration())
+        .then(() => setVisibleTimeoutModal(true))
+        .run();
+    }
+  }, [status]);
 
   useEffect(() => {
     const theme = challengeTheme.find(({ id }) => id === themeId);
@@ -78,12 +148,29 @@ export function useGameVM() {
         .then(() => setVisibleCountdown(true))
         .run();
     }
-  }, []);
+  }, [
+    difficulty,
+    initGame,
+    selectedTheme?.cards,
+    selectedTheme?.title,
+    setEntryAnimationType,
+    setShouldAnimate,
+    themeId,
+  ]);
 
   return {
     selectedTheme,
     visibleCountdown,
     handleCountdownComplete,
-    handleGoBack,
+    visibleTimeoutModal,
+    handleExit,
+    handleTryAgain,
+    handleGoHome,
+    showExitModal,
+    handleCancelExit,
+    handleConfirmExit,
+    handleOpenExitModal,
+    setShowVictoryModal,
+    showVictoryModal,
   };
 }

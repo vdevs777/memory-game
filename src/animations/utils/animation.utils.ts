@@ -3,6 +3,17 @@ import {
   CardEntryAnimationType,
 } from "../config/animation.config";
 
+export function getFallAnimationDuration() {
+  const config = ANIMATION_TIMINGS.fall;
+  return (
+    config.maxRandomDelay +
+    config.duration +
+    config.opacityDelay +
+    config.opacityDuration +
+    200
+  );
+}
+
 export function getEntryAnimationDuration(
   cardCount: number,
   animationType: CardEntryAnimationType,

@@ -30,6 +30,15 @@ export function useCardEntryAnimation({
   const { entryAnimationType, shouldAnimate } = useAnimationStore();
 
   useEffect(() => {
+    if (!shouldAnimate) {
+      translateX.value = 0;
+      translateY.value = 0;
+      opacity.value = 0;
+      scale.value = 1.2;
+      rotation.value = 0;
+
+      return;
+    }
     if (shouldAnimate) {
       const config = ANIMATION_TIMINGS.entry[entryAnimationType];
       const delay = cardIndex * config.delayBetweenCards;

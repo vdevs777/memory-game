@@ -7,6 +7,7 @@ export const SPRING_CONFIG = {
   entryDeck: { damping: 22, stiffness: 180 } as WithSpringConfig,
   entryScale: { damping: 22, stiffness: 180 } as WithSpringConfig,
   selection: { damping: 15, stiffness: 300 } as WithSpringConfig,
+  modal: { damping: 25, stiffness: 120, mass: 1 } as WithSpringConfig,
 };
 
 export type CardEntryAnimationType = "throw" | "deck";
@@ -20,6 +21,13 @@ export const ANIMATION_TIMINGS = {
   entry: {
     throw: { duration: 400, delayBetweenCards: 50 },
     deck: { duration: 350, delayBetweenCards: 40 },
+  },
+  fall: {
+    duration: 600,
+    rotation: 300,
+    opacityDuration: 200,
+    opacityDelay: 400,
+    maxRandomDelay: 200,
   },
 } as AnimationTimings;
 
